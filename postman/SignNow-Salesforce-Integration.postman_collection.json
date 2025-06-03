@@ -1,0 +1,312 @@
+{
+  "info": {
+    "name": "SignNow-Salesforce Integration",
+    "description": "Colección para probar la integración entre Salesforce y SignNow",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Listar Templates",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/v1/templates",
+          "host": ["{{base_url}}"],
+          "path": ["v1", "templates"]
+        },
+        "description": "Obtiene la lista de templates disponibles en SignNow"
+      },
+      "response": [
+        {
+          "name": "Respuesta Exitosa",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/v1/templates",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "templates"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "[\n  {\n    \"id\": \"template123\",\n    \"name\": \"Autorización de Verificación Electrónica\",\n    \"roles\": [\"Solicitante\", \"CoFirmante\"],\n    \"owner_email\": \"propietario@ejemplo.com\",\n    \"thumbnail\": {\n      \"small\": \"https://api.signnow.com/document/template123/thumbnail/small\",\n      \"medium\": \"https://api.signnow.com/document/template123/thumbnail/medium\",\n      \"large\": \"https://api.signnow.com/document/template123/thumbnail/large\"\n    }\n  },\n  {\n    \"id\": \"template456\",\n    \"name\": \"Contrato de Servicios\",\n    \"roles\": [\"Cliente\", \"Proveedor\"],\n    \"owner_email\": \"propietario@ejemplo.com\",\n    \"thumbnail\": {\n      \"small\": \"https://api.signnow.com/document/template456/thumbnail/small\",\n      \"medium\": \"https://api.signnow.com/document/template456/thumbnail/medium\",\n      \"large\": \"https://api.signnow.com/document/template456/thumbnail/large\"\n    }\n  }\n]"
+        }
+      ]
+    },
+    {
+      "name": "Solicitud de Firma con Template",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"templateId\": \"template123\",\n  \"documentName\": \"Autorización de Verificación Electrónica\",\n  \"signers\": [\n    {\n      \"order\": 1,\n      \"email\": \"rjvelazquez96@gmail.com\",\n      \"role\": \"Solicitante\",\n      \"nombre\": \"Rafael Velázquez\",\n      \"subject\": \"Solicitud de firma - Autorización\",\n      \"message\": \"Por favor firme el documento de autorización\",\n      \"expiration_days\": 5\n    },\n    {\n      \"order\": 2,\n      \"email\": \"rochugui10@gmail.com\",\n      \"role\": \"CoFirmante\",\n      \"nombre\": \"Rocío Chávez\",\n      \"subject\": \"Solicitud de firma - Autorización\",\n      \"message\": \"Por favor firme el documento de autorización\",\n      \"expiration_days\": 3\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/v1/template-signature-requests",
+          "host": ["{{base_url}}"],
+          "path": ["v1", "template-signature-requests"]
+        },
+        "description": "Envía una solicitud de firma usando un template existente. El servicio clonará el template y enviará las invitaciones a los firmantes especificados."
+      },
+      "response": [
+        {
+          "name": "Respuesta Exitosa",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"success\": true,\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"documentId\": \"doc123\",\n  \"inviteIds\": [\"invite123\", \"invite456\"],\n  \"signedDocumentUrl\": \"https://api.signnow.com/document/doc123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/template-signature-requests",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "template-signature-requests"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"documentId\": \"doc123\",\n  \"inviteIds\": [\"invite123\", \"invite456\"],\n  \"signedDocumentUrl\": \"https://api.signnow.com/document/doc123\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Solicitud de Firma con Archivo Local",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"filePath\": \"D:\\\\User\\\\Documents\\\\GitHub\\\\SignNowNodeSDK\\\\storage\\\\downloads\\\\Autorizacion_Verificacion_Electronica.pdf\",\n  \"signers\": [\n    {\n      \"order\": 1,\n      \"email\": \"rjvelazquez96@gmail.com\",\n      \"role\": \"Solicitante\",\n      \"nombre\": \"Rafael Velázquez\",\n      \"subject\": \"Solicitud de firma - Autorización\",\n      \"message\": \"Por favor firme el documento de autorización\",\n      \"expiration_days\": 5,\n      \"fields\": [\n        {\n          \"type\": \"signature\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 200,\n          \"width\": 200,\n          \"height\": 50,\n          \"required\": true,\n          \"label\": \"Firma del Solicitante\"\n        },\n        {\n          \"type\": \"date\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 300,\n          \"width\": 150,\n          \"height\": 30,\n          \"required\": true,\n          \"label\": \"Fecha de Firma\"\n        }\n      ]\n    },\n    {\n      \"order\": 2,\n      \"email\": \"rochugui10@gmail.com\",\n      \"role\": \"CoFirmante\",\n      \"nombre\": \"Rocío Chávez\",\n      \"subject\": \"Solicitud de firma - Autorización\",\n      \"message\": \"Por favor firme el documento de autorización\",\n      \"expiration_days\": 3,\n      \"fields\": [\n        {\n          \"type\": \"signature\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 400,\n          \"width\": 200,\n          \"height\": 50,\n          \"required\": true,\n          \"label\": \"Firma del CoFirmante\"\n        },\n        {\n          \"type\": \"initial\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 500,\n          \"width\": 100,\n          \"height\": 30,\n          \"required\": true,\n          \"label\": \"Iniciales\"\n        }\n      ]\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/v1/file-signature-requests",
+          "host": ["{{base_url}}"],
+          "path": ["v1", "file-signature-requests"]
+        },
+        "description": "Envía una solicitud de firma con un archivo local. El servicio usará el email del usuario autenticado como remitente de las invitaciones. Cada firmante puede tener campos específicos que debe llenar y una fecha de expiración personalizada."
+      },
+      "response": [
+        {
+          "name": "Respuesta Exitosa",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"success\": true,\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"documentId\": \"doc123\",\n  \"inviteIds\": [\"invite123\", \"invite456\"],\n  \"signedDocumentUrl\": \"https://api.signnow.com/document/doc123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/file-signature-requests",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "file-signature-requests"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"documentId\": \"doc123\",\n  \"inviteIds\": [\"invite123\", \"invite456\"],\n  \"signedDocumentUrl\": \"https://api.signnow.com/document/doc123\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Solicitud de Firma con Base64",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"document\": {\n    \"filename\": \"Autorizacion_Verificacion_Electronica.pdf\",\n    \"contentBase64\": \"JVBERi0xLjMKJcfs...\"\n  },\n  \"expirationDate\": \"2025-06-23T23:59:59Z\",\n  \"signers\": [\n    {\n      \"order\": 1,\n      \"email\": \"rjvelazquez96@gmail.com\",\n      \"role\": \"Solicitante\",\n      \"nombre\": \"Rafael Velázquez\",\n      \"subject\": \"Solicitud de firma - Autorización\",\n      \"message\": \"Por favor firme el documento de autorización\",\n      \"expiration_days\": 5,\n      \"fields\": [\n        {\n          \"type\": \"signature\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 200,\n          \"width\": 200,\n          \"height\": 50,\n          \"required\": true,\n          \"label\": \"Firma del Solicitante\"\n        },\n        {\n          \"type\": \"date\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 300,\n          \"width\": 150,\n          \"height\": 30,\n          \"required\": true,\n          \"label\": \"Fecha de Firma\"\n        }\n      ]\n    },\n    {\n      \"order\": 2,\n      \"email\": \"rochugui10@gmail.com\",\n      \"role\": \"CoFirmante\",\n      \"nombre\": \"Rocío Chávez\",\n      \"subject\": \"Solicitud de firma - Autorización\",\n      \"message\": \"Por favor firme el documento de autorización\",\n      \"expiration_days\": 3,\n      \"fields\": [\n        {\n          \"type\": \"signature\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 400,\n          \"width\": 200,\n          \"height\": 50,\n          \"required\": true,\n          \"label\": \"Firma del CoFirmante\"\n        },\n        {\n          \"type\": \"initial\",\n          \"page\": 1,\n          \"x\": 100,\n          \"y\": 500,\n          \"width\": 100,\n          \"height\": 30,\n          \"required\": true,\n          \"label\": \"Iniciales\"\n        }\n      ]\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/v1/signature-requests",
+          "host": ["{{base_url}}"],
+          "path": ["v1", "signature-requests"]
+        },
+        "description": "Envía una solicitud de firma con el documento en formato base64. El servicio usará el email del usuario autenticado como remitente de las invitaciones. Cada firmante puede tener campos específicos que debe llenar y una fecha de expiración personalizada."
+      },
+      "response": [
+        {
+          "name": "Respuesta Exitosa",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"success\": true,\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"documentId\": \"doc123\",\n  \"inviteIds\": [\"invite123\", \"invite456\"],\n  \"signedDocumentUrl\": \"https://api.signnow.com/document/doc123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/signature-requests",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "signature-requests"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"recordId\": \"a1B3k00000Xyz123\",\n  \"documentId\": \"doc123\",\n  \"inviteIds\": [\"invite123\", \"invite456\"],\n  \"signedDocumentUrl\": \"https://api.signnow.com/document/doc123\"\n}"
+        }
+      ]
+    },
+    {
+      "name": "Probar Flujo Index.ts",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"filePath\": \"D:\\\\User\\\\Documents\\\\GitHub\\\\SignNowNodeSDK\\\\storage\\\\downloads\\\\Autorizacion_Verificacion_Electronica.pdf\",\n  \"recipientEmail\": \"rjvelazquez96@gmail.com\"\n}"
+        },
+        "url": {
+          "raw": "{{base_url}}/v1/test-flow",
+          "host": ["{{base_url}}"],
+          "path": ["v1", "test-flow"]
+        },
+        "description": "Prueba el flujo del index.ts que sabemos que funciona correctamente. Este endpoint usa el email del usuario autenticado como remitente."
+      },
+      "response": [
+        {
+          "name": "Respuesta Exitosa",
+          "originalRequest": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"success\": true,\n  \"documentId\": \"doc123\",\n  \"inviteId\": \"invite123\",\n  \"userInfo\": {\n    \"id\": \"user123\",\n    \"primary_email\": \"sender@example.com\"\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/v1/test-flow",
+              "host": ["{{base_url}}"],
+              "path": ["v1", "test-flow"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"success\": true,\n  \"documentId\": \"doc123\",\n  \"inviteId\": \"invite123\",\n  \"userInfo\": {\n    \"id\": \"user123\",\n    \"primary_email\": \"sender@example.com\"\n  }\n}"
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{base_url}}/health",
+          "host": ["{{base_url}}"],
+          "path": ["health"]
+        },
+        "description": "Verifica el estado del servidor"
+      },
+      "response": [
+        {
+          "name": "Respuesta Exitosa",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_previewlanguage": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n  \"status\": \"ok\"\n}"
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:3000",
+      "type": "string"
+    }
+  ]
+} 

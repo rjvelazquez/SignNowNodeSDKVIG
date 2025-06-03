@@ -16,17 +16,12 @@ export class CloneTemplatePost implements BaseClass {
 
   constructor(
     private templateId: string,
-    private documentName: string | null = null,
-    private clientTimestamp: string | null = null,
-    private folderId: string | null = null,
+    private documentName: string
   ) {}
 
-  public getPayload(): Record<string, string | null> {
+  public getPayload(): Record<string, string> {
     return {
-      template_id: this.templateId,
-      document_name: this.documentName,
-      client_timestamp: this.clientTimestamp,
-      folder_id: this.folderId,
+      document_name: this.documentName
     };
   }
 
@@ -52,7 +47,7 @@ export class CloneTemplatePost implements BaseClass {
 
   public getUriParams(): { template_id: string } {
     return {
-      template_id: this.templateId,
+      template_id: this.templateId
     };
   }
 }

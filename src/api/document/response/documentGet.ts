@@ -93,3 +93,22 @@ export interface DocumentGet {
   field_validators?: FieldValidator[];
   document_group_template_info?: DocumentGroupTemplateInfo[];
 }
+
+export interface DocumentRole {
+  unique_id: string;
+  signing_order: string;
+  name: string;
+}
+
+export interface DocumentGetResponse {
+  id: string;
+  document_name: string;
+  roles: DocumentRole[];
+  owner: string;
+  created: string;
+  updated: string;
+  page_count: number;
+  signatures_count: number;
+  status: string;
+  template: boolean;
+}

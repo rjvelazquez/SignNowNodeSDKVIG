@@ -11,45 +11,23 @@ import { BaseClass } from '../../../types/baseClass';
 import { HttpMethod } from '../../../core/contstants';
 import { HttpAuthType } from '../../../core/contstants';
 
-export interface Signer {
-  email: string;
-  role_id: string;
-  role: string;
-  order: number;
-  prefill_signature_name?: string;
-  force_new_signature?: number;
-  reassign?: string;
-  decline_by_signature?: string;
-  reminder?: number;
-  expiration_days?: number;
-  authentication_type?: string;
-  password?: string;
-  subject?: string;
-  message?: string;
-}
-
-export class FreeFormInvitePost implements BaseClass {
+export class TemplateGet implements BaseClass {
   private queryParams: Record<string, string> = {};
 
-  constructor(
-    private documentId: string,
-    private to: Signer[],
-    private from: string
-  ) {}
+  constructor(private templateId: string) {}
 
-  public getPayload(): Record<string, unknown> {
+  public getPayload(): Record<string, string> {
     return {
-      to: this.to,
-      from: this.from
+      template_id: this.templateId,
     };
   }
 
   public getMethod(): string {
-    return HttpMethod.POST;
+    return HttpMethod.GET;
   }
 
   public getUrl(): string {
-    return '/document/{document_id}/invite';
+    return '/v2/templates/{template_id}/copies';
   }
 
   public getAuthMethod(): string {
@@ -64,9 +42,9 @@ export class FreeFormInvitePost implements BaseClass {
     return this.queryParams;
   }
 
-  public getUriParams(): { document_id: string } {
+  public getUriParams(): { template_id: string } {
     return {
-      document_id: this.documentId
+      template_id: this.templateId,
     };
   }
-}
+} 
