@@ -7,53 +7,33 @@
  * that was distributed with this source code.
  */
 
-import { BaseClass } from '../../../types/baseClass';
-import { HttpMethod } from '../../../core/contstants';
-import { HttpAuthType } from '../../../core/contstants';
-import { Attribute } from './data/attribute';
+import { ApiRequest } from '../../core/apiRequest';
 
-export class SubscriptionPost implements BaseClass {
-  private queryParams: Record<string, string> = {};
+export interface WebhookAttributes {
+  callback: string;
+  use_tls_12?: boolean;
+  integration_id?: string;
+  docid_queryparam?: boolean;
+  headers?: Record<string, string | number | boolean>;
+  secret_key?: string;
+  delay?: number;
+  retry_count?: number;
+  delete_access_token?: boolean;
+  include_metadata?: boolean;
+}
 
-  constructor(
-    private event: string,
-    private entityId: string,
-    private action: string = '',
-    private attributes: Attribute = { callback: '' },
-    private secretKey: string = '',
-  ) {}
+export interface WebhookSubscriptionRequest {
+  event: string;
+  entity_id: string;
+  action: 'callback';
+  attributes: WebhookAttributes;
+}
 
-  public getPayload(): Record<string, string | object> {
-    return {
-      event: this.event,
-      entity_id: this.entityId,
-      action: this.action,
-      attributes: this.attributes,
-      secret_key: this.secretKey,
-    };
-  }
-
-  public getMethod(): string {
-    return HttpMethod.POST;
-  }
-
-  public getUrl(): string {
-    return '/api/v2/events';
-  }
-
-  public getAuthMethod(): string {
-    return HttpAuthType.BEARER;
-  }
-
-  public getContentType(): string {
-    return 'application/json';
-  }
-
-  public getQueryParams(): Record<string, string> {
-    return this.queryParams;
-  }
-
-  public getUriParams(): null {
-    return null;
+export class SubscriptionPost extends ApiRequest<WebhookSubscriptionRequest> {
+  constructor(request: WebhookSubscriptionRequest) {
+    super();
+    this.method = 'POST';
+    this.url = '/api/v2/events';
+    this.payload = request;
   }
 }

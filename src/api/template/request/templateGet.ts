@@ -14,12 +14,10 @@ import { HttpAuthType } from '../../../core/contstants';
 export class TemplateGet implements BaseClass {
   private queryParams: Record<string, string> = {};
 
-  constructor(private templateId: string) {}
+  constructor(private templateId?: string) {}
 
   public getPayload(): Record<string, string> {
-    return {
-      template_id: this.templateId,
-    };
+    return {};
   }
 
   public getMethod(): string {
@@ -27,7 +25,9 @@ export class TemplateGet implements BaseClass {
   }
 
   public getUrl(): string {
-    return '/v2/templates/{template_id}/copies';
+    return this.templateId 
+      ? `/v2/templates/${this.templateId}/copies`
+      : '/user/documentsv2';
   }
 
   public getAuthMethod(): string {
@@ -39,12 +39,13 @@ export class TemplateGet implements BaseClass {
   }
 
   public getQueryParams(): Record<string, string> {
-    return this.queryParams;
+    return {
+      ...this.queryParams,
+      filter_by_template: '1'
+    };
   }
 
-  public getUriParams(): { template_id: string } {
-    return {
-      template_id: this.templateId,
-    };
+  public getUriParams(): { template_id?: string } {
+    return this.templateId ? { template_id: this.templateId } : {};
   }
 } 

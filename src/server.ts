@@ -163,7 +163,7 @@ app.post('/v1/template-signature-requests', async (req: Request, res: Response) 
 });
 
 // Ruta para listar templates
-app.get('/v1/templates', async (req: Request, res: Response) => {
+app.get('/v2/templates', async (req: Request, res: Response) => {
   try {
     console.log('List templates request');
     // Validar que el servicio esté inicializado
@@ -177,10 +177,10 @@ app.get('/v1/templates', async (req: Request, res: Response) => {
     const templates = await salesforceService.listTemplates();
     console.log('Templates found:', templates.length);
     // Enviar respuesta
-    res.json(templates);
+    return res.json(templates);
   } catch (error) {
     console.error('Error al listar templates:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       error: 'Error interno del servidor',
       details: error instanceof Error ? error.message : 'Error desconocido'
@@ -188,18 +188,18 @@ app.get('/v1/templates', async (req: Request, res: Response) => {
   }
 });
 
-// Ruta para obtener un template específico
-app.get('/v1/templates/:templateId', async (req: Request, res: Response) => {
+// Ruta para obtener copias de un template específico
+app.get('/v2/templates/:templateId/copies', async (req: Request, res: Response) => {
   try {
-    console.log('Get template by ID request');
+    console.log('Get template copies request');
     // Validar que el servicio esté inicializado
     if (!isServiceInitialized) {
       console.log('Initializing service');
       await salesforceService.initialize();
       isServiceInitialized = true;
     }
-    console.log('Getting template by ID');
-    // Obtener el template específico
+    console.log('Getting template copies');
+    // Obtener las copias del template específico
     const template = await salesforceService.getTemplateById(req.params.templateId);
     if (!template) {
       return res.status(404).json({
@@ -208,10 +208,10 @@ app.get('/v1/templates/:templateId', async (req: Request, res: Response) => {
       });
     }
     // Enviar respuesta
-    res.json(template);
+    return res.json(template);
   } catch (error) {
-    console.error('Error al obtener template:', error);
-    res.status(500).json({
+    console.error('Error al obtener copias del template:', error);
+    return res.status(500).json({
       success: false,
       error: 'Error interno del servidor',
       details: error instanceof Error ? error.message : 'Error desconocido'
@@ -273,6 +273,32 @@ app.post('/v1/templates/:templateId/send', async (req: Request, res: Response) =
   }
 });
 
+// Ruta para listar templates usando el endpoint v2
+app.get('/user/documentsv2', async (req: Request, res: Response) => {
+  try {
+    console.log('List templates request v2');
+    // Validar que el servicio esté inicializado
+    if (!isServiceInitialized) {
+      console.log('Initializing service');
+      await salesforceService.initialize();
+      isServiceInitialized = true;
+    }
+    console.log('Getting templates list v2');
+    // Obtener la lista de templates
+    const templates = await salesforceService.listTemplates();
+    console.log('Templates found:', templates.length);
+    // Enviar respuesta
+    return res.json(templates);
+  } catch (error) {
+    console.error('Error al listar templates:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+});
+
 // Ruta de salud
 app.get('/health', (req: Request, res: Response) => {
     console.log('Health check');
@@ -286,8 +312,9 @@ app.listen(port, () => {
   console.log('- POST /v1/signature-requests');
   console.log('- POST /v1/file-signature-requests');
   console.log('- POST /v1/template-signature-requests');
-  console.log('- GET /v1/templates');
-  console.log('- GET /v1/templates/:templateId');
+  console.log('- GET /v2/templates');
+  console.log('- GET /v2/templates/:templateId/copies');
+  console.log('- GET /user/documentsv2');
   console.log('- POST /v1/test-flow');
   console.log('- GET /health');
 }); 

@@ -15,7 +15,8 @@ import { GroupTemplateGet } from '../api/template/request/groupTemplateGet';
 import { GroupTemplateGet as GroupTemplateGetResponse } from '../api/template/response/groupTemplateGet';
 import { TemplateGet } from '../api/template/request/templateGet';
 import { TemplateGet as TemplateGetResponse } from '../api/template/response/templateGet';
-import { DocumentGet, DocumentGetResponse } from '../api/document/request/documentGet';
+import { DocumentGet } from '../api/document/request/documentGet';
+import { DocumentPut } from '../api/document/request/documentPut';
 
 interface SignerField {
   type: 'signature' | 'initial' | 'text' | 'date' | 'checkbox';
@@ -27,6 +28,21 @@ interface SignerField {
   required: boolean;
   label?: string;
   value?: string;
+  prefilled_text?: string;
+  validator_id?: string;
+  stretch_mode?: 'fixed' | 'horizontal' | 'vertical' | 'auto';
+  max_lines?: number;
+  max_chars?: number;
+  arrangement?: 'cells' | 'none';
+  bold?: boolean;
+  italic?: boolean;
+  underline?: boolean;
+  font?: 'Arial' | 'Times New Roman' | 'Courier New' | 'Tahoma' | 'Comic Sans MS';
+  font_size?: number;
+  color?: string;
+  align?: 'left' | 'center' | 'right';
+  valign?: 'top' | 'middle' | 'bottom';
+  stretch_to_grid?: boolean;
 }
 
 interface Signer {
@@ -184,6 +200,31 @@ export class SalesforceService {
         if (!role) {
           throw new Error(`No se encontró el rol "${signer.role}" en el documento`);
         }
+
+        // Si el firmante tiene campos definidos, configurar el campo de texto
+        if (signer.fields) {
+          signer.fields = signer.fields.map(field => {
+            if (field.type === 'text' && field.label === 'Text Field 1') {
+              return {
+                ...field,
+                stretch_mode: 'auto',
+                max_lines: 10,
+                max_chars: 1000,
+                arrangement: 'none',
+                font: 'Arial',
+                font_size: 12,
+                color: '#000000',
+                align: 'left',
+                valign: 'top',
+                stretch_to_grid: true,
+                width: 400,  // Ancho inicial más grande
+                height: 60   // Altura inicial más grande
+              };
+            }
+            return field;
+          });
+        }
+
         return {
           email: signer.email,
           role_id: role.unique_id,
@@ -339,7 +380,7 @@ export class SalesforceService {
       // 3. Obtener información del documento clonado
       console.log('🔍 Obteniendo información del documento clonado...');
       const documentGet = new DocumentGet(templateResponse.id);
-      const documentResponse = await this.client.send<DocumentGetResponse>(documentGet);
+      const documentResponse = await this.client.send(documentGet);
       
       if (!documentResponse.roles || documentResponse.roles.length === 0) {
         throw new Error('El documento clonado no tiene roles definidos');
@@ -432,29 +473,26 @@ export class SalesforceService {
     try {
       console.log('🔍 Buscando templates disponibles...');
       
-      // Obtener la carpeta raíz
-      const folderGet = new FolderGet();
-      const folderResponse = await this.client.send<FolderGetResponse>(folderGet);
+      // Obtener la lista de templates usando el endpoint v2
+      const templateGet = new TemplateGet('');
+      const templateResponse = await this.client.send<TemplateGetResponse>(templateGet);
       
-      // Obtener los documentos de la carpeta raíz
-      const folderDocumentsGet = new FolderDocumentsGet(folderResponse.id);
-      const documentsResponse = await this.client.send<FolderDocumentsGetResponse>(folderDocumentsGet);
-      
-      // Filtrar documentos que son templates y obtener su información detallada
-      const templates: Template[] = [];
-      
-      for (const doc of documentsResponse.documents) {
-        if (doc.template) {
-          try {
-            const templateInfo = await this.getTemplateById(doc.id);
-            if (templateInfo) {
-              templates.push(templateInfo);
-            }
-          } catch (error) {
-            console.error(`❌ Error al obtener información del template ${doc.id}:`, error);
-          }
-        }
+      if (!templateResponse || !Array.isArray(templateResponse)) {
+        console.log('❌ No se encontraron templates');
+        return [];
       }
+
+      const templates: Template[] = templateResponse.map(template => ({
+        id: template.id,
+        name: template.template_name || template.document_name || 'Sin nombre',
+        roles: template.roles || [],
+        owner_email: template.owner_email || template.owner || '',
+        thumbnail: template.thumbnail || {
+          small: '',
+          medium: '',
+          large: ''
+        }
+      }));
       
       console.log('✅ Se encontraron', templates.length, 'templates');
       return templates;
