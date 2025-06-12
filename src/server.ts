@@ -337,6 +337,32 @@ app.get('/user/templates', async (req: Request, res: Response) => {
   }
 });
 
+// Ruta para obtener un documento específico
+app.get('/v2/documents/:documentId', async (req: Request, res: Response) => {
+  try {
+    console.log(`Iniciando solicitud de documento ID: ${req.params.documentId}`);
+    // Validar que el servicio esté inicializado
+    if (!isServiceInitialized) {
+      console.log('Inicializando servicio...');
+      await salesforceService.initialize();
+      isServiceInitialized = true;
+    }
+    console.log('Obteniendo documento...');
+    // Obtener el documento
+    const document = await salesforceService.getDocument(req.params.documentId);
+    console.log('Documento encontrado:', document.id);
+    // Enviar respuesta
+    return res.json(document);
+  } catch (error) {
+    console.error('Error al obtener documento:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+});
+
 // Ruta de salud
 app.get('/health', (req: Request, res: Response) => {
   console.log('Verificando estado del servidor...');

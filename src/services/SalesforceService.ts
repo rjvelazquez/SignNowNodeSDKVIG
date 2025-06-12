@@ -17,6 +17,7 @@ import { TemplateGet } from '../api/template/request/templateGet';
 import { TemplateGet as TemplateGetResponse } from '../api/template/response/templateGet';
 import { DocumentGet } from '../api/document/request/documentGet';
 import { DocumentPut } from '../api/document/request/documentPut';
+import { DocumentGetRequest, DocumentGetResponse } from '../api/document';
 
 interface SignerField {
   type: 'signature' | 'initial' | 'text' | 'date' | 'checkbox';
@@ -502,6 +503,62 @@ export class SalesforceService {
       return templates;
     } catch (error) {
       console.error('❌ Error al listar templates:', error);
+      throw error;
+    }
+  }
+
+  public async getTemplateCopies(templateId: string): Promise<Template[]> {
+    try {
+      console.log('🔍 Obteniendo copias del template:', templateId);
+      
+      // Obtener las copias del template usando TemplateGet
+      const templateGet = new TemplateGet(templateId);
+      const templateResponse = await this.client.send<TemplateGetResponse>(templateGet);
+      
+      if (!templateResponse || !Array.isArray(templateResponse)) {
+        console.log('❌ No se encontraron copias del template');
+        return [];
+      }
+
+      const templates: Template[] = templateResponse.map(template => ({
+        id: template.id,
+        name: template.template_name || template.document_name || 'Sin nombre',
+        roles: template.roles || [],
+        owner_email: template.owner_email || template.owner || '',
+        thumbnail: template.thumbnail || {
+          small: '',
+          medium: '',
+          large: ''
+        },
+        template: template.template || false
+      }));
+      
+      console.log('✅ Se encontraron', templates.length, 'copias del template');
+      return templates;
+    } catch (error) {
+      console.error('❌ Error al obtener copias del template:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene un documento específico por su ID
+   * @param documentId ID del documento a obtener
+   * @returns Documento encontrado
+   */
+  public async getDocument(documentId: string): Promise<any> {
+    try {
+      console.log(`Obteniendo documento con ID: ${documentId}`);
+      const sdk = await new Sdk().authenticate();
+      const client = sdk.getClient();
+
+      const documentGet = new DocumentGetRequest(documentId);
+      const response = await client.send<DocumentGetResponse>(documentGet);
+
+      console.log('Documento obtenido exitosamente');
+      return response;
+    } catch (error) {
+      console.error('Error al obtener documento:', error);
       throw error;
     }
   }
