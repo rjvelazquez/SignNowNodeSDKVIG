@@ -10,3 +10,6 @@
 .env.production
 .env.development
 package-lock.json
+
+# Local Netlify folder
+.netlify

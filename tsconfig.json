@@ -1,33 +1,16 @@
 {
   "compilerOptions": {
-    "strict": true,
-
-    "skipLibCheck": true,
-    "module": "ES2022",
-    "moduleResolution": "node",
-    "target": "ES2022",
-    "isolatedModules": true,
+    "target": "ES2020",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
-    "noEmit": true,
     "outDir": "./dist",
-
-    "forceConsistentCasingInFileNames": true, 
-    "declaration": true,
-    "resolveJsonModule": true,
-    "noImplicitAny": true,
-
-     "noUnusedLocals": true,
-     "noUnusedParameters": true,
-     "noImplicitReturns": true,
-     "noFallthroughCasesInSwitch": true,
-
-    "removeComments": true,
-    "sourceMap": true,
-    "noLib": false,
+    "rootDir": "./src",
+    "strict": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true
   },
-  "exclude": [
-    "dist",
-    "node_modules"
-  ],
-  "include": ["**/*.ts"],
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

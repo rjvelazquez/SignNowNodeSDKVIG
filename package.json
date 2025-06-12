@@ -8,7 +8,9 @@
     "start": "tsx index.ts",
     "test": "cross-env DOTENV_CONFIG_PATH=.env.test jest",
     "eslint": "eslint . --fix",
-    "dev": "tsx src/server.ts"
+    "dev": "tsx src/server.ts",
+    "build": "tsc",
+    "serve": "node dist/server.js"
   },
   "engines": {
     "node": ">=20.x.x",
