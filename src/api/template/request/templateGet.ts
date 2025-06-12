@@ -41,7 +41,7 @@ export class TemplateGet implements BaseClass {
   public getQueryParams(): Record<string, string> {
     return {
       ...this.queryParams,
-      filter_by_template: '1'
+      filter_by_template: 'true'
     };
   }
 

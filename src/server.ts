@@ -1,4 +1,4 @@
-import express, { Request, Response } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
 import { SalesforceService } from './services/SalesforceService';
 import { Sdk } from './core/sdk';
@@ -17,6 +17,12 @@ const port = process.env.PORT || 3000;
 
 // Middleware para parsear JSON
 app.use(express.json({ limit: '50mb' }));
+
+// Middleware para mostrar las rutas accedidas
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[${new Date().toISOString()}] Accediendo a: ${req.method} ${req.originalUrl}`);
+  next();
+});
 
 // Instancia del servicio
 const salesforceService = new SalesforceService();
@@ -191,24 +197,19 @@ app.get('/v2/templates', async (req: Request, res: Response) => {
 // Ruta para obtener copias de un template específico
 app.get('/v2/templates/:templateId/copies', async (req: Request, res: Response) => {
   try {
-    console.log('Get template copies request');
+    console.log(`Iniciando solicitud de copias para template ID: ${req.params.templateId}`);
     // Validar que el servicio esté inicializado
     if (!isServiceInitialized) {
-      console.log('Initializing service');
+      console.log('Inicializando servicio...');
       await salesforceService.initialize();
       isServiceInitialized = true;
     }
-    console.log('Getting template copies');
-    // Obtener las copias del template específico
-    const template = await salesforceService.getTemplateById(req.params.templateId);
-    if (!template) {
-      return res.status(404).json({
-        success: false,
-        error: 'Template no encontrado'
-      });
-    }
+    console.log('Obteniendo copias del template...');
+    // Obtener las copias del template
+    const copies = await salesforceService.getTemplateCopies(req.params.templateId);
+    console.log(`Copias encontradas: ${copies.length}`);
     // Enviar respuesta
-    return res.json(template);
+    return res.json(copies);
   } catch (error) {
     console.error('Error al obtener copias del template:', error);
     return res.status(500).json({
@@ -276,19 +277,56 @@ app.post('/v1/templates/:templateId/send', async (req: Request, res: Response) =
 // Ruta para listar templates usando el endpoint v2
 app.get('/user/documentsv2', async (req: Request, res: Response) => {
   try {
-    console.log('List templates request v2');
+    console.log('Iniciando solicitud de listado de documentos v2');
     // Validar que el servicio esté inicializado
     if (!isServiceInitialized) {
-      console.log('Initializing service');
+      console.log('Inicializando servicio...');
       await salesforceService.initialize();
       isServiceInitialized = true;
     }
-    console.log('Getting templates list v2');
+    console.log('Obteniendo lista de documentos v2...');
     // Obtener la lista de templates
     const templates = await salesforceService.listTemplates();
-    console.log('Templates found:', templates.length);
+    console.log(`Documentos encontrados: ${templates.length}`);
     // Enviar respuesta
     return res.json(templates);
+  } catch (error) {
+    console.error('Error al listar documentos:', error);
+    return res.status(500).json({
+      success: false,
+      error: 'Error interno del servidor',
+      details: error instanceof Error ? error.message : 'Error desconocido'
+    });
+  }
+});
+
+// Ruta para listar solo templates
+app.get('/user/templates', async (req: Request, res: Response) => {
+  try {
+    console.log('Iniciando solicitud de listado de templates');
+    // Validar que el servicio esté inicializado
+    if (!isServiceInitialized) {
+      console.log('Inicializando servicio...');
+      await salesforceService.initialize();
+      isServiceInitialized = true;
+    }
+    console.log('Obteniendo lista de templates...');
+    // Obtener la lista de templates
+    const templates = await salesforceService.listTemplates();
+    console.log(`Total de documentos obtenidos: ${templates.length}`);
+    
+    // Filtrar solo los documentos que son templates
+    const onlyTemplates = templates.filter(doc => {
+      const isTemplate = doc.template === true;
+      if (isTemplate) {
+        console.log(`Template encontrado: ${doc.name || 'Sin nombre'} (ID: ${doc.id})`);
+      }
+      return isTemplate;
+    });
+    
+    console.log(`Templates encontrados: ${onlyTemplates.length}`);
+    // Enviar respuesta
+    return res.json(onlyTemplates);
   } catch (error) {
     console.error('Error al listar templates:', error);
     return res.status(500).json({
@@ -301,8 +339,12 @@ app.get('/user/documentsv2', async (req: Request, res: Response) => {
 
 // Ruta de salud
 app.get('/health', (req: Request, res: Response) => {
-    console.log('Health check');
-  res.json({ status: 'ok' });
+  console.log('Verificando estado del servidor...');
+  return res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 // Iniciar el servidor
@@ -315,6 +357,7 @@ app.listen(port, () => {
   console.log('- GET /v2/templates');
   console.log('- GET /v2/templates/:templateId/copies');
   console.log('- GET /user/documentsv2');
+  console.log('- GET /user/templates');
   console.log('- POST /v1/test-flow');
   console.log('- GET /health');
 }); 

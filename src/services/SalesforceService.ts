@@ -100,6 +100,7 @@ interface Template {
     medium: string;
     large: string;
   };
+  template: boolean;
 }
 
 interface TemplateResponse {
@@ -114,6 +115,7 @@ interface TemplateResponse {
     medium: string;
     large: string;
   };
+  template?: boolean;
 }
 
 interface Document {
@@ -455,7 +457,8 @@ export class SalesforceService {
           small: '',
           medium: '',
           large: ''
-        }
+        },
+        template: templateResponse.template || false
       };
       
       console.log('✅ Template encontrado:', templateInfo.name);
@@ -491,7 +494,8 @@ export class SalesforceService {
           small: '',
           medium: '',
           large: ''
-        }
+        },
+        template: template.template || false
       }));
       
       console.log('✅ Se encontraron', templates.length, 'templates');
