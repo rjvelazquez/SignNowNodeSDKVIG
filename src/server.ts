@@ -18,9 +18,20 @@ const port = process.env.PORT || 3000;
 // Middleware para parsear JSON
 app.use(express.json({ limit: '50mb' }));
 
-// Middleware para mostrar las rutas accedidas
+// Middleware para CORS
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`[${new Date().toISOString()}] Accediendo a: ${req.method} ${req.originalUrl}`);
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
+
+// Middleware para logging
+app.use((req: Request, res: Response, next: NextFunction) => {
+  console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
   next();
 });
 
@@ -363,14 +374,9 @@ app.get('/v2/documents/:documentId', async (req: Request, res: Response) => {
   }
 });
 
-// Ruta de salud
+// Ruta de health check
 app.get('/health', (req: Request, res: Response) => {
-  console.log('Verificando estado del servidor...');
-  return res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    uptime: process.uptime()
-  });
+  res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // Iniciar el servidor
@@ -381,7 +387,6 @@ app.listen(port, () => {
   console.log('- POST /v1/file-signature-requests');
   console.log('- POST /v1/template-signature-requests');
   console.log('- GET /v2/templates');
-  console.log('- GET /v2/templates/:templateId/copies');
   console.log('- GET /user/documentsv2');
   console.log('- GET /user/templates');
   console.log('- POST /v1/test-flow');

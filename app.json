@@ -1,0 +1,17 @@
+{
+  "name": "SignNow Node SDK",
+  "description": "API para integración con SignNow",
+  "repository": "https://github.com/rjvelazquez/SignNowNodeSDK",
+  "keywords": ["node", "express", "signnow", "api"],
+  "env": {
+    "NODE_ENV": {
+      "description": "Environment",
+      "value": "production"
+    }
+  },
+  "buildpacks": [
+    {
+      "url": "heroku/nodejs"
+    }
+  ]
+} 

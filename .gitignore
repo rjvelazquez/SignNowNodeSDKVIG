@@ -1,15 +1,43 @@
-/.idea
-/.fleet
-/.vscode
-/.netbeans
-/node_modules
-/target
+# Dependencies
+node_modules/
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Environment
 .env
-.env.backup
-.env.test
-.env.production
-.env.development
-package-lock.json
+.env.local
+.env.*.local
+
+# Build
+dist/
+build/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
+.nyc_output/
+
+# Temporary files
+*.tmp
+*.temp
 
 # Local Netlify folder
 .netlify
+.vercel

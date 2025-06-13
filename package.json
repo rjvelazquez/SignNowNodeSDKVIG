@@ -2,15 +2,15 @@
   "name": "nodejs-sdk-3.0",
   "version": "1.0.0",
   "description": "signNow API NODEJS SDK",
-  "main": "index.ts",
+  "main": "dist/server.js",
   "type": "module",
   "scripts": {
-    "start": "tsx index.ts",
-    "test": "cross-env DOTENV_CONFIG_PATH=.env.test jest",
-    "eslint": "eslint . --fix",
+    "start": "node dist/server.js",
     "dev": "tsx src/server.ts",
     "build": "tsc",
-    "serve": "node dist/server.js"
+    "postinstall": "npm run build",
+    "test": "cross-env DOTENV_CONFIG_PATH=.env.test jest",
+    "eslint": "eslint . --fix"
   },
   "engines": {
     "node": ">=20.x.x",
