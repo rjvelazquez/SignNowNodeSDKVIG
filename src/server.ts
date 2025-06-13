@@ -1,13 +1,13 @@
 import express, { Request, Response, NextFunction } from 'express';
 import dotenv from 'dotenv';
-import { SalesforceService } from './services/SalesforceService';
-import { Sdk } from './core/sdk';
-import { FreeFormInvitePost } from './api/documentInvite/request/freeFormInvitePost';
-import { FreeFormInvitePost as FreeFormInvitePostResponse } from './api/documentInvite/response/freeFormInvitePost';
-import { UserGetRequest, UserGetResponse } from './api/user';
-import { DocumentPostRequest, DocumentPostResponse } from './api/document';
+import { SalesforceService } from './services/SalesforceService.js';
+import { Sdk } from './core/sdk.js';
+import { FreeFormInvitePost } from './api/documentInvite/request/freeFormInvitePost.js';
+import { FreeFormInvitePost as FreeFormInvitePostResponse } from './api/documentInvite/response/freeFormInvitePost.js';
+import { UserGetRequest, UserGetResponse } from './api/user/index.js';
+import { DocumentPostRequest, DocumentPostResponse } from './api/document/index.js';
 import path from 'path';
-import { TemplateRequest } from './api/template/request/templateRequest';
+import { TemplateRequest } from './api/template/request/templateRequest.js';
 
 // Cargar variables de entorno
 dotenv.config();

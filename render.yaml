@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: signnow-node-sdk
+    env: node
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: SIGNNOW_API_HOST
+        sync: false
+      - key: SIGNNOW_API_BASIC_TOKEN
+        sync: false
+      - key: SIGNNOW_API_USERNAME
+        sync: false
+      - key: SIGNNOW_API_PASSWORD
+        sync: false
+      - key: SIGNNOW_DOWNLOADS_DIR
+        sync: false 
