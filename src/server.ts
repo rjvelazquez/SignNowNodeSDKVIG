@@ -8,6 +8,7 @@ import { UserGetRequest, UserGetResponse } from './api/user';
 import { DocumentPostRequest, DocumentPostResponse } from './api/document';
 import path from 'path';
 import { TemplateRequest } from './api/template/request/templateRequest';
+import { WebhookHandlerService } from './services/WebhookHandlerService';
 
 // Cargar variables de entorno
 dotenv.config();
@@ -378,6 +379,11 @@ app.get('/v2/documents/:documentId', async (req: Request, res: Response) => {
 app.get('/health', (req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
+
+// Instanciar el manejador de webhooks y montar su ruta en el servidor principal
+const webhookSecretKey = process.env.WEBHOOK_SECRET_KEY || 'clave_predeterminada';
+const webhookHandler = new WebhookHandlerService(webhookSecretKey);
+app.use('/', webhookHandler.expressApp);
 
 // Iniciar el servidor
 app.listen(port, () => {

@@ -110,4 +110,8 @@ export class WebhookHandlerService {
       console.log(`🚀 Servidor webhook iniciado en el puerto ${port}`);
     });
   }
+
+  public get expressApp(): express.Application {
+    return this.app;
+  }
 } 
