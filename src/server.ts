@@ -381,7 +381,7 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // Instanciar el manejador de webhooks y montar su ruta en el servidor principal
-const webhookSecretKey = process.env.WEBHOOK_SECRET_KEY || 'clave_predeterminada';
+const webhookSecretKey = process.env.WEBHOOK_SECRET_KEY || 'wWKCp6RcECyDPmD3FzETBOhAqQRmOeVKaIOA3jnYIqOgUhFoxL';
 const webhookHandler = new WebhookHandlerService(webhookSecretKey);
 app.use('/', webhookHandler.expressApp);
 

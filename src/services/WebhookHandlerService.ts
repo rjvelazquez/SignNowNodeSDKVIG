@@ -34,6 +34,12 @@ export class WebhookHandlerService {
 
   private async handleWebhook(req: express.Request, res: express.Response): Promise<void> {
     try {
+      // Imprimir todo el request para depuración
+      console.log('--- Webhook recibido ---');
+      console.log('Headers:', JSON.stringify(req.headers, null, 2));
+      console.log('Body:', JSON.stringify(req.body, null, 2));
+      console.log('------------------------');
+
       const signature = req.headers['x-signnow-signature'];
       
       if (!signature || typeof signature !== 'string') {
