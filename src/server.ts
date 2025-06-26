@@ -16,8 +16,13 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware para parsear JSON
-app.use(express.json({ limit: '50mb' }));
+// Middleware para parsear JSON y guardar el raw body
+app.use(express.json({
+  limit: '50mb',
+  verify: (req, res, buf) => {
+    req.rawBody = buf;
+  }
+}));
 
 // Middleware para CORS
 app.use((req: Request, res: Response, next: NextFunction) => {
